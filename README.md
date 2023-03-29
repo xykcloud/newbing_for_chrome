@@ -4,4 +4,4 @@
 
 规则地址：https://raw.githubusercontent.com/xykcloud/bing_redirect_to_globe/main/bing.json
 
-注：国内IP必为cn.bing.com，故需要对bing翻墙
+注：国内IP必为cn.bing.com，故需要对bing开启代理访问
