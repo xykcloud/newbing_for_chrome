@@ -7,10 +7,34 @@
 			"matchType": "prefix",
 			"pattern": "https://cn.bing.com",
 			"exclude": "",
-			"group": "bing",
+			"group": "未分组",
 			"isFunction": false,
 			"action": "redirect",
 			"to": "https://www.bing.com"
+		},
+		{
+			"enable": true,
+			"name": "GoogleAPIs",
+			"ruleType": "redirect",
+			"matchType": "regexp",
+			"pattern": "^https?://ajax\\.googleapis\\.com/(.*)",
+			"exclude": "",
+			"isFunction": false,
+			"action": "redirect",
+			"to": "https://gapis.geekzu.org/ajax/$1",
+			"group": "未分组"
+		},
+		{
+			"enable": true,
+			"name": "reCAPTCHA",
+			"ruleType": "redirect",
+			"matchType": "regexp",
+			"pattern": "^https?://www\\.google\\.com/recaptcha/(.*)",
+			"exclude": "",
+			"isFunction": false,
+			"action": "redirect",
+			"to": "https://recaptcha.net/recaptcha/$1",
+			"group": "未分组"
 		}
 	],
 	"sendHeader": [
@@ -21,14 +45,68 @@
 			"matchType": "regexp",
 			"pattern": "^http(s?)://www\\.bing\\.com/(.*)",
 			"exclude": "",
-			"group": "bing",
+			"group": "未分组",
 			"isFunction": false,
 			"action": {
 				"name": "x-forwarded-for",
 				"value": "8.8.8.8"
 			}
+		},
+		{
+			"enable": true,
+			"name": "edge-ua",
+			"ruleType": "modifySendHeader",
+			"matchType": "regexp",
+			"pattern": "^http(s?)://(.*).bing\\.com/(.*)",
+			"exclude": "",
+			"group": "未分组",
+			"isFunction": false,
+			"action": {
+				"name": "user-agent",
+				"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.63"
+			}
+		},
+		{
+			"enable": true,
+			"name": "edge-sec-ch-ua",
+			"ruleType": "modifySendHeader",
+			"matchType": "regexp",
+			"pattern": "^http(s?)://(.*).bing\\.com/(.*)",
+			"exclude": "",
+			"group": "未分组",
+			"isFunction": false,
+			"action": {
+				"name": "sec-ch-ua",
+				"value": "\"Chromium\";v=\"112\", \"Microsoft Edge\";v=\"112\", \"Not:A-Brand\";v=\"99\""
+			}
+		},
+		{
+			"enable": true,
+			"name": "bing-x-forwarded-for",
+			"ruleType": "modifySendHeader",
+			"matchType": "regexp",
+			"pattern": "^http(s?)://(.*).bing\\.com/(.*)",
+			"exclude": "",
+			"group": "未分组",
+			"isFunction": false,
+			"action": {
+				"name": "x-forwarded-for",
+				"value": "33.220.177.44"
+			}
 		}
 	],
-	"receiveHeader": [],
+	"receiveHeader": [
+		{
+			"enable": true,
+			"name": "CSP allows redirections",
+			"ruleType": "modifyReceiveHeader",
+			"matchType": "all",
+			"pattern": "",
+			"exclude": "",
+			"isFunction": true,
+			"code": "let rt = detail.type;\nif (rt === 'script' || rt === 'stylesheet' || rt === 'main_frame' || rt === 'sub_frame') {\n  for (let i in val) {\n    if (val[i].name.toLowerCase() === 'content-security-policy') {\n      let s = val[i].value;\n      s = s.replace(/googleapis\\.com/g, '$& https://gapis.geekzu.org');\n      s = s.replace(/google\\.com/g, '$& https://recaptcha.net');\n      s = s.replace(/gstatic\\.com/g, '$& https://*.gstatic.cn');\n      val[i].value = s;\n      break;\n    }\n  }\n}",
+			"group": "未分组"
+		}
+	],
 	"receiveBody": []
 }
